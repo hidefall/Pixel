@@ -16,43 +16,56 @@
 	<meta charset="<?php bloginfo( 'charset' ); ?>">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="profile" href="https://gmpg.org/xfn/11">
-
+	<link href="//db.onlinewebfonts.com/c/7dee4e8052171a216cd2446ea682b742?family=Berthold+Akzidenz+Grotesk+BE" rel="stylesheet" type="text/css"/>
 	<?php wp_head(); ?>
 </head>
 
 <body <?php body_class(); ?>>
 <div id="page" class="site">
-	<a class="skip-link screen-reader-text" href="#content"><?php esc_html_e( 'Skip to content', 'pixel' ); ?></a>
 
-	<header id="masthead" class="site-header">
-		<div class="site-branding">
-			<?php
-			the_custom_logo();
-			if ( is_front_page() && is_home() ) :
-				?>
-				<h1 class="site-title"><a href="<?php echo esc_url( home_url( '/' ) ); ?>" rel="home"><?php bloginfo( 'name' ); ?></a></h1>
-				<?php
-			else :
-				?>
-				<p class="site-title"><a href="<?php echo esc_url( home_url( '/' ) ); ?>" rel="home"><?php bloginfo( 'name' ); ?></a></p>
-				<?php
-			endif;
-			$pixel_description = get_bloginfo( 'description', 'display' );
-			if ( $pixel_description || is_customize_preview() ) :
-				?>
-				<p class="site-description"><?php echo $pixel_description; /* WPCS: xss ok. */ ?></p>
-			<?php endif; ?>
-		</div><!-- .site-branding -->
+<?php if (get_theme_mod('hero_background')) :?>
+<div class="header_color_wrapper">
+	<header id="masthead" class="site-header" style="background: linear-gradient(
+		rgba(51, 51, 51, 0.48),rgba(51, 51, 51, 0.48)), center center no-repeat url('<?php echo get_theme_mod('hero_background');?>');background-size: cover; min-height: 100%; height: 100vh;">
+<?php endif;?>
+		
+		
+		<nav class="navbar navbar-expand-md pixel-navigation" role="navigation">
+  <div class="container">
+	<!-- Brand and toggle get grouped for better mobile display -->
+	<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-controls="bs-example-navbar-collapse-1" aria-expanded="false" aria-label="Toggle navigation">
+		<span class="navbar-toggler-icon"></span>
+	</button>
+	<a class="navbar-brand" href="#"><?php the_custom_logo()?></a>
+		<?php
+		wp_nav_menu( array(
+			'theme_location'    => 'primary',
+			'depth'             => 1,
+			'container'         => 'div',
+			'container_class'   => 'collapse navbar-collapse pixel-nav-container',
+			'container_id'      => 'bs-example-navbar-collapse-1',
+			'menu_class'        => 'nav navbar-nav navbar',
+			'fallback_cb'       => 'WP_Bootstrap_Navwalker::fallback',
+			'walker'            => new WP_Bootstrap_Navwalker(),
+		) );
+		?>
+	</div>
+</nav>
+<div class="container hero_content">
+			<div class="row">
+				<div class="col-md-6 col-md-offset-1 hero_info_text">
+				<?php echo(get_theme_mod('hero_background_test'));?>
 
-		<nav id="site-navigation" class="main-navigation">
-			<button class="menu-toggle" aria-controls="primary-menu" aria-expanded="false"><?php esc_html_e( 'Primary Menu', 'pixel' ); ?></button>
-			<?php
-			wp_nav_menu( array(
-				'theme_location' => 'menu-1',
-				'menu_id'        => 'primary-menu',
-			) );
-			?>
-		</nav><!-- #site-navigation -->
+					<?php if(get_theme_mod('hero_title')) :?><span class="hero_title"><?php echo get_theme_mod('hero_title');?></span><?php endif;?>
+					<?php if(get_theme_mod('hero_subtitle')) :?><h1 class="hero_subtitle"><?php echo get_theme_mod('hero_subtitle');?></h1><?php endif;?>
+					</div>
+					<div class="col-md-6 call_to_action">
+						<div>
+						<a href="#" class="call_btn btn">Call To Action</a>
+						</div>
+				</div>
+		</div>
 	</header><!-- #masthead -->
+	</div>
 
 	<div id="content" class="site-content">

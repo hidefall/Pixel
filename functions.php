@@ -44,7 +44,7 @@ if ( ! function_exists( 'pixel_setup' ) ) :
 
 		// This theme uses wp_nav_menu() in one location.
 		register_nav_menus( array(
-			'menu-1' => esc_html__( 'Primary', 'pixel' ),
+			'primary' => esc_html__( 'Primary', 'pixel' ),
 		) );
 
 		/*
@@ -120,9 +120,11 @@ add_action( 'widgets_init', 'pixel_widgets_init' );
  * Enqueue scripts and styles.
  */
 function pixel_scripts() {
-	wp_enqueue_style( 'pixel-style', get_stylesheet_uri() );
+	wp_enqueue_style( 'pixel-style', get_template_directory_uri() . '/dist/app.css' );
 
+	wp_enqueue_script( 'custom-js', get_template_directory_uri() . '/dist/dev.js');
 	wp_enqueue_script( 'pixel-navigation', get_template_directory_uri() . '/js/navigation.js', array(), '20151215', true );
+	
 
 	wp_enqueue_script( 'pixel-skip-link-focus-fix', get_template_directory_uri() . '/js/skip-link-focus-fix.js', array(), '20151215', true );
 
@@ -130,6 +132,97 @@ function pixel_scripts() {
 		wp_enqueue_script( 'comment-reply' );
 	}
 }
+// Add ACF Options Page
+if( function_exists('acf_add_options_page') ) {
+	
+	acf_add_options_page();
+	
+}
+
+/** 
+ * Add Hero Background Image
+*/
+
+function hero_section( $wp_customize ) {
+	$wp_customize->add_panel( 'hero_section', array(
+		'priority'       => 500,
+		'theme_supports' => '',
+		'title'          => __( 'Hero Section', 'pixel' ),
+		'description'    => __( 'Add Hero Section Background Image.', 'pixel' ),
+	) );
+
+	$wp_customize->add_section( 'hero_section_background_image' , array(
+		'title'      => __( 'Change hero backgorund', 'pixel' ),
+		'panel'    => 'hero_section',
+		'priority'   => 30,
+		'active_callback' => 'is_front_page'
+	) );
+
+	$wp_customize->add_section( 'hero_section_subtitle' , array(
+		'title'      => __( 'Change subtitle', 'pixel' ),
+		'panel'    => 'hero_section',
+		'priority'   => 30,
+		'active_callback' => 'is_front_page'
+	) );
+	$wp_customize->add_section( 'hero_section_title' , array(
+		'title'      => __( 'Change title', 'pixel' ),
+		'panel'    => 'hero_section',
+		'priority'   => 30,
+		'active_callback' => 'is_front_page'
+	) );
+
+
+	$wp_customize->add_setting( 'hero_background', array(
+		'default'           => get_stylesheet_directory_uri() . '/img/header_bg.jpg',
+        'capability'        => 'edit_theme_options',
+		'type'           => 'option',
+   ) );
+
+   $wp_customize->add_setting( 'hero_subtitle', array(
+	'default'           => '',
+	'capability'        => 'edit_theme_options',
+	// 'type' => 'text',
+	'sanitize_callback' => 'our_sanitize_function',
+	'type' => 'theme_mod'
+) );
+$wp_customize->add_setting( 'hero_title', array(
+	'default'           => '',
+	'capability'        => 'edit_theme_options',
+	// 'type' => 'text',
+	'sanitize_callback' => 'our_sanitize_function',
+	'type' => 'theme_mod'
+) );
+	$wp_customize->add_control( new WP_Customize_Image_Control( $wp_customize, 'hero_background', array(
+		'label'      => __( 'Hero Background Image', 'pixel' ),
+		'section'    => 'hero_section_background_image',
+		'settings'   => 'hero_background',
+		
+	) ) );
+
+
+	$wp_customize->add_control( new WP_Customize_Control( $wp_customize, 'hero_title', array(
+		'label'      => __( 'Hero Title', 'pixel' ),
+		'section'    => 'hero_section_title',
+		'settings'   => 'hero_title',
+		'type' => 'text',
+	) ) );
+	$wp_customize->add_control( new WP_Customize_Control( $wp_customize, 'hero_subtitle', array(
+		'label'      => __( 'Hero Subtitle', 'pixel' ),
+		'section'    => 'hero_section_subtitle',
+		'settings'   => 'hero_subtitle',
+		'type' => 'text',
+	) ) );
+
+
+ }
+
+ 
+ function our_sanitize_function( $input ) {
+    return wp_kses_post( force_balance_tags( $input ) );
+}
+ add_action( 'customize_register', 'hero_section' );
+
+
 add_action( 'wp_enqueue_scripts', 'pixel_scripts' );
 
 /**
@@ -151,6 +244,10 @@ require get_template_directory() . '/inc/template-functions.php';
  * Customizer additions.
  */
 require get_template_directory() . '/inc/customizer.php';
+/**
+ * Boostrap NavWalker 
+ */
+require_once get_template_directory() . '/class-wp-bootstrap-navwalker.php';
 
 /**
  * Load Jetpack compatibility file.
@@ -158,4 +255,3 @@ require get_template_directory() . '/inc/customizer.php';
 if ( defined( 'JETPACK__VERSION' ) ) {
 	require get_template_directory() . '/inc/jetpack.php';
 }
-
